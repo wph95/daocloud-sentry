@@ -157,7 +157,7 @@ SENTRY_CACHE = 'sentry.cache.redis.RedisCache'
 
 
 CELERY_ALWAYS_EAGER = False
-BROKER_URL = 'redis://localhost:6379'
+
 
 ###############
 # Rate Limits #
@@ -257,4 +257,3 @@ MAILGUN_API_KEY = ''
 # If this file ever becomes compromised, it's important to regenerate your SECRET_KEY
 # Changing this value will result in all current sessions being invalidated
 SECRET_KEY = 'F64oTzU6sOdjpenbbGF4vVZGZXfxfyypAwOArbN/2XR5gfV9pWzaDw=='
-
