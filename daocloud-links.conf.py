@@ -1,17 +1,83 @@
 import os
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'WVu7vhbCmsrAm48h',
-        'HOST':  '10.10.188.209',
-        'PORT': '51558',
-        'OPTIONS': {
-            'autocommit': True,
+postgres = os.getenv('SENTRY_POSTGRES_HOST') or (os.getenv('POSTGRES_PORT_5432_TCP_ADDR') and 'postgres')
+mysql = os.getenv('SENTRY_MYSQL_HOST') or (os.getenv('MYSQL_PORT_3306_TCP_ADDR') and 'mysql')
+redis = os.getenv('SENTRY_REDIS_HOST') or (os.getenv('REDIS_PORT_6379_TCP_ADDR') and 'redis')
+memcached = os.getenv('SENTRY_MEMCACHED_HOST') or (os.getenv('MEMCACHED_PORT_11211_TCP_ADDR') and 'memcached')
+SENTRY_CACHE = 'sentry.cache.redis.RedisCache'
+if postgres:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': (
+                os.getenv('SENTRY_DB_NAME')
+                or os.getenv('POSTGRES_INSTANCE_NAME')
+                or 'postgres'
+            ),
+            'USER': (
+                os.getenv('SENTRY_DB_USER')
+                or os.getenv('POSTGRES_USERNAME')
+                or 'postgres'
+            ),
+            'PASSWORD': (
+                os.getenv('SENTRY_DB_PASSWORD')
+                or os.getenv('POSTGRES_PASSWORD')
+                or ''
+            ),
+            'HOST':  os.getenv('POSTGRES_PORT_5432_TCP_ADDR'),
+            'PORT': (
+                os.getenv('POSTGRES_PORT_5432_TCP_PORT')
+                or ''
+            ),
+            'OPTIONS': {
+                'autocommit': True,
+            },
         },
-    },
-}
+    }
+elif mysql:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': (
+                os.getenv('SENTRY_DB_NAME')
+                or os.getenv('MYSQL_ENV_MYSQL_DATABASE')
+                or ''
+            ),
+            'USER': (
+                os.getenv('SENTRY_DB_USER')
+                or os.getenv('MYSQL_ENV_MYSQL_USER')
+                or 'root'
+            ),
+            'PASSWORD': (
+                os.getenv('SENTRY_DB_PASSWORD')
+                or os.getenv('MYSQL_ENV_MYSQL_PASSWORD')
+                or os.getenv('MYSQL_ENV_MYSQL_ROOT_PASSWORD')
+                or ''
+            ),
+            'HOST': mysql,
+            'PORT': (
+                os.getenv('SENTRY_MYSQL_PORT')
+                or ''
+            ),
+        },
+    }
+else:
+    sqlite_path = (
+        os.getenv('SENTRY_DB_NAME')
+        or 'sentry.db'
+    )
+    if not os.path.isabs(sqlite_path):
+        sqlite_path = os.path.join(CONF_ROOT, sqlite_path)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': sqlite_path,
+            'USER': '',
+            'PASSWORD': '',
+            'HOST': '',
+            'PORT': '',
+        },
+    }
+
 
 
 SENTRY_BUFFER = 'sentry.buffer.redis.RedisBuffer'
@@ -20,7 +86,7 @@ SENTRY_REDIS_OPTIONS = {
         0: {
             'host': 'localhost',
             'port': '6379',
-            'db': '/0'
+            'db': '0'
         },
     },
 }
