@@ -1,6 +1,6 @@
 FROM buildpack-deps:jessie
 
-
+# install Python 2.7.10
 RUN apt-get purge -y python.*
 ENV LANG C.UTF-8
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF
@@ -26,17 +26,10 @@ RUN set -x \
 		-exec rm -rf '{}' + \
 	&& rm -rf /usr/src/python
 
-
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		ca-certificates \
-		curl \
-	&& rm -rf /var/lib/apt/lists/*
-
+# install Redis 2.8.9
 ENV REDIS_DOWNLOAD_URL http://download.redis.io/releases/redis-2.8.9.tar.gz
-RUN buildDeps='gcc libc6-dev make' \
-	&& set -x \
-	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends \
+RUN set -x \
+	&& apt-get update && apt-get install -y gcc libc6-dev make --no-install-recommends \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& mkdir -p /usr/src/redis \
 	&& curl -sSL "$REDIS_DOWNLOAD_URL" -o redis.tar.gz \
@@ -49,8 +42,8 @@ RUN buildDeps='gcc libc6-dev make' \
 RUN mkdir -p /data
 VOLUME /data
 
-
-RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev python-dev libmysqlclient-dev && rm -rf /var/lib/apt/lists/*
+# install Sentry 8.0.0rc1
+RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev python-dev libmysqlclient-dev --no-install-recommends&& rm -rf /var/lib/apt/lists/*
 RUN pip install psycopg2 mysql-python python-memcached redis hiredis nydus
 RUN pip install -U sentry==8.0.0rc1
 COPY daocloud-links.conf.py /

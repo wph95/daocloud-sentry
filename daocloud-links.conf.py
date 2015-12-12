@@ -1,32 +1,32 @@
 import os
-postgres = os.getenv('SENTRY_POSTGRES_HOST') or (os.getenv('POSTGRES_PORT_5432_TCP_ADDR') and 'postgres')
+postgres = os.getenv('SENTRY_POSTGRES_HOST') or (os.getenv('POSTGRESQL_PORT_5432_TCP_ADDR') and 'postgres')
 mysql = os.getenv('SENTRY_MYSQL_HOST') or (os.getenv('MYSQL_PORT_3306_TCP_ADDR') and 'mysql')
 redis = os.getenv('SENTRY_REDIS_HOST') or (os.getenv('REDIS_PORT_6379_TCP_ADDR') and 'redis')
-memcached = os.getenv('SENTRY_MEMCACHED_HOST') or (os.getenv('MEMCACHED_PORT_11211_TCP_ADDR') and 'memcached')
-SENTRY_CACHE = 'sentry.cache.redis.RedisCache'
+
+
 if postgres:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': (
                 os.getenv('SENTRY_DB_NAME')
-                or os.getenv('POSTGRES_INSTANCE_NAME')
+                or os.getenv('POSTGRESQL_INSTANCE_NAME')
                 or 'postgres'
             ),
             'USER': (
                 os.getenv('SENTRY_DB_USER')
-                or os.getenv('POSTGRES_USERNAME')
+                or os.getenv('POSTGRESQL_USERNAME')
                 or 'postgres'
             ),
             'PASSWORD': (
                 os.getenv('SENTRY_DB_PASSWORD')
-                or os.getenv('POSTGRES_PASSWORD')
+                or os.getenv('POSTGRESQL_PASSWORD')
                 or ''
             ),
-            'HOST':  os.getenv('POSTGRES_PORT_5432_TCP_ADDR'),
+            'HOST':  postgres,
             'PORT': (
-                os.getenv('POSTGRES_PORT_5432_TCP_PORT')
-                or ''
+                os.getenv('POSTGRESQL_PORT_5432_TCP_PORT')
+                or '5432'
             ),
             'OPTIONS': {
                 'autocommit': True,
@@ -39,50 +39,28 @@ elif mysql:
             'ENGINE': 'django.db.backends.mysql',
             'NAME': (
                 os.getenv('SENTRY_DB_NAME')
-                or os.getenv('MYSQL_ENV_MYSQL_DATABASE')
+                or os.getenv('MYSQL_INSTANCE_NAME')
                 or ''
             ),
             'USER': (
                 os.getenv('SENTRY_DB_USER')
-                or os.getenv('MYSQL_ENV_MYSQL_USER')
+                or os.getenv('MYSQL_USERNAME')
                 or 'root'
             ),
             'PASSWORD': (
                 os.getenv('SENTRY_DB_PASSWORD')
-                or os.getenv('MYSQL_ENV_MYSQL_PASSWORD')
-                or os.getenv('MYSQL_ENV_MYSQL_ROOT_PASSWORD')
+                or os.getenv('MYSQL_PASSWORD')
                 or ''
             ),
             'HOST': mysql,
             'PORT': (
                 os.getenv('SENTRY_MYSQL_PORT')
+                or os.getenv('MYSQL_PORT_3306_TCP_PORT')
                 or ''
             ),
         },
     }
-else:
-    sqlite_path = (
-        os.getenv('SENTRY_DB_NAME')
-        or 'sentry.db'
-    )
-    if not os.path.isabs(sqlite_path):
-        sqlite_path = os.path.join(CONF_ROOT, sqlite_path)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': sqlite_path,
-            'USER': '',
-            'PASSWORD': '',
-            'HOST': '',
-            'PORT': '',
-        },
-    }
 
-
-redis_db = (
-        os.getenv('REDIS_DB')
-        or '0'
-    )
 
 
 SENTRY_BUFFER = 'sentry.buffer.redis.RedisBuffer'
@@ -91,12 +69,14 @@ SENTRY_REDIS_OPTIONS = {
         0: {
             'host': 'localhost',
             'port': '6379',
-            'db': redis_db
+            'db': '0'
         },
     },
 }
 BROKER_URL = 'redis://'+ 'localhost:6379' + '/0'
 
+
+SENTRY_CACHE = 'sentry.cache.redis.RedisCache'
 
 # This file is just Python, with a touch of Django which means
 # you can inherit and tweak settings to your hearts content.
@@ -117,7 +97,7 @@ SENTRY_USE_BIG_INTS = True
 # the beacon documentation for more information. This **must** be a string.
 
 # SENTRY_ADMIN_EMAIL = 'your.name@example.com'
-SENTRY_ADMIN_EMAIL = ''
+SENTRY_ADMIN_EMAIL = os.getenv('SENTRY_ADMIN_EMAIL')
 
 # Instruct Sentry that this install intends to be run by a single organization
 # and thus various UI optimizations should be enabled.
@@ -188,7 +168,7 @@ SENTRY_FILESTORE_OPTIONS = {
 ##############
 
 # You MUST configure the absolute URI root for Sentry:
-SENTRY_URL_PREFIX = 'http://sentry.codevs.com'  # No trailing slash!
+SENTRY_URL_PREFIX = os.getenv('SENTRY_REDIS_HOST')  # No trailing slash!
 
 # If you're using a reverse proxy, you should enable the X-Forwarded-Proto
 # header and uncomment the following settings
@@ -211,23 +191,16 @@ SENTRY_WEB_OPTIONS = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_HOST = 'localhost'
-EMAIL_HOST_PASSWORD = ''
-EMAIL_HOST_USER = ''
-EMAIL_PORT = 25
-EMAIL_USE_TLS = False
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 
 # The email address to send on behalf of
-SERVER_EMAIL = 'root@localhost'
+SERVER_EMAIL = os.getenv('SERVER_EMAIL')
 
 # If you're using mailgun for inbound mail, set your API key and configure a
 # route to forward to /api/hooks/mailgun/inbound/
-MAILGUN_API_KEY = ''
 
-########
-# etc. #
-########
-
-# If this file ever becomes compromised, it's important to regenerate your SECRET_KEY
-# Changing this value will result in all current sessions being invalidated
-SECRET_KEY = 'F64oTzU6sOdjpenbbGF4vVZGZXfxfyypAwOArbN/2XR5gfV9pWzaDw=='
+SECRET_KEY = os.getenv('SECRET_KEY')
