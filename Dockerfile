@@ -1,5 +1,6 @@
 FROM sentry:7.7
 
+RUN pip install -U sentry==8.0.0rc1
 COPY daocloud-links.conf.py /
 COPY docker-entrypoint.sh /
 EXPOSE 9000
