@@ -31,6 +31,7 @@ RUN set -x \
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		ca-certificates \
 		curl \
+        libpq-dev python-dev \ 
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV REDIS_DOWNLOAD_URL http://download.redis.io/releases/redis-2.8.9.tar.gz
