@@ -114,9 +114,7 @@ if redis:
     BROKER_URL = 'redis://:' +redis_password+"@"+ redis + ':' + redis_port + '/' + redis_db
 else:
     raise Exception('Error: REDIS_PORT_6379_TCP_ADDR (or SENTRY_REDIS_HOST) is undefined, did you forget to a redis container?')
-print BROKER_URL
-print DATABASES
-print SENTRY_REDIS_OPTIONS
+
 
 # This file is just Python, with a touch of Django which means
 # you can inherit and tweak settings to your hearts content.
