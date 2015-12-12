@@ -78,42 +78,19 @@ else:
         },
     }
 
-if memcached:
-    memcached_port = (
-        os.getenv('SENTRY_MEMCACHED_PORT')
-        or '11211'
-    )
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-            'LOCATION': [memcached + ':' + memcached_port],
-        }
-    }
 
-if redis:
-    redis_port = (
-        os.getenv('REDIS_PORT_6379_TCP_PORT')
-        or '6379'
-    )
-    redis_db = (
-        os.getenv('REDIS_DB')
-        or '0'
-    )
-    redis_password = os.getenv('REDIS_PASSWORD')
-    SENTRY_BUFFER = 'sentry.buffer.redis.RedisBuffer'
-    SENTRY_REDIS_OPTIONS = {
-        'hosts': {
-            0: {
-                'host': redis,
-                'port': redis_port,
-                'db': redis_db,
-                'password': redis_password
-            },
+
+SENTRY_BUFFER = 'sentry.buffer.redis.RedisBuffer'
+SENTRY_REDIS_OPTIONS = {
+    'hosts': {
+        0: {
+            'host': 'localhost',
+            'port': '6379',
+            'db': '/0'
         },
-    }
-    BROKER_URL = 'redis://:' +redis_password+"@"+ redis + ':' + redis_port + '/' + redis_db
-else:
-    raise Exception('Error: REDIS_PORT_6379_TCP_ADDR (or SENTRY_REDIS_HOST) is undefined, did you forget to a redis container?')
+    },
+}
+BROKER_URL = 'redis://'+ 'localhost:6379' + '/0'
 
 
 # This file is just Python, with a touch of Django which means

@@ -1,4 +1,5 @@
 #!/bin/bash
+redis-server &
 sentry --config=/daocloud-links.conf.py upgrade
 sentry --config=/daocloud-links.conf.py celery beat &
 sentry --config=/daocloud-links.conf.py celery worker &
