@@ -31,7 +31,6 @@ RUN set -x \
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		ca-certificates \
 		curl \
-        libpq-dev python-dev \ 
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV REDIS_DOWNLOAD_URL http://download.redis.io/releases/redis-2.8.9.tar.gz
@@ -52,7 +51,7 @@ RUN mkdir -p /data
 VOLUME /data
 
 
-
+RUN apt-get update && apt-get install libpq-dev python-dev && rm -rf /var/lib/apt/lists/*
 RUN pip install psycopg2 mysql-python python-memcached redis hiredis nydus
 RUN pip install -U sentry==8.0.0rc1
 COPY daocloud-links.conf.py /
