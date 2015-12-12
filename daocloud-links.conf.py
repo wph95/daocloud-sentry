@@ -1,66 +1,37 @@
 import os
-postgres = os.getenv('SENTRY_POSTGRES_HOST') or (os.getenv('POSTGRESQL_PORT_5432_TCP_ADDR') and 'postgres')
-mysql = os.getenv('SENTRY_MYSQL_HOST') or (os.getenv('MYSQL_PORT_3306_TCP_ADDR') and 'mysql')
-redis = os.getenv('SENTRY_REDIS_HOST') or (os.getenv('REDIS_PORT_6379_TCP_ADDR') and 'redis')
 
-
-if postgres:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': (
-                os.getenv('SENTRY_DB_NAME')
-                or os.getenv('POSTGRESQL_INSTANCE_NAME')
-                or 'postgres'
-            ),
-            'USER': (
-                os.getenv('SENTRY_DB_USER')
-                or os.getenv('POSTGRESQL_USERNAME')
-                or 'postgres'
-            ),
-            'PASSWORD': (
-                os.getenv('SENTRY_DB_PASSWORD')
-                or os.getenv('POSTGRESQL_PASSWORD')
-                or ''
-            ),
-            'HOST':  postgres,
-            'PORT': (
-                os.getenv('POSTGRESQL_PORT_5432_TCP_PORT')
-                or '5432'
-            ),
-            'OPTIONS': {
-                'autocommit': True,
-            },
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': (
+            os.getenv('SENTRY_DB_NAME')
+            or os.getenv('POSTGRESQL_INSTANCE_NAME')
+            or 'postgres'
+        ),
+        'USER': (
+            os.getenv('SENTRY_DB_USER')
+            or os.getenv('POSTGRESQL_USERNAME')
+            or 'postgres'
+        ),
+        'PASSWORD': (
+            os.getenv('SENTRY_DB_PASSWORD')
+            or os.getenv('POSTGRESQL_PASSWORD')
+            or ''
+        ),
+        'HOST': (
+            os.getenv('SENTRY_DB_HOST')
+            or os.getenv('POSTGRESQL_PORT_5432_TCP_ADDR')
+            or 'postgres'
+        ),
+        'PORT': (
+            os.getenv('POSTGRESQL_PORT_5432_TCP_PORT')
+            or '5432'
+        ),
+        'OPTIONS': {
+            'autocommit': True,
         },
-    }
-elif mysql:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': (
-                os.getenv('SENTRY_DB_NAME')
-                or os.getenv('MYSQL_INSTANCE_NAME')
-                or ''
-            ),
-            'USER': (
-                os.getenv('SENTRY_DB_USER')
-                or os.getenv('MYSQL_USERNAME')
-                or 'root'
-            ),
-            'PASSWORD': (
-                os.getenv('SENTRY_DB_PASSWORD')
-                or os.getenv('MYSQL_PASSWORD')
-                or ''
-            ),
-            'HOST': mysql,
-            'PORT': (
-                os.getenv('SENTRY_MYSQL_PORT')
-                or os.getenv('MYSQL_PORT_3306_TCP_PORT')
-                or ''
-            ),
-        },
-    }
-
+    },
+}
 
 
 SENTRY_BUFFER = 'sentry.buffer.redis.RedisBuffer'
@@ -79,24 +50,8 @@ BROKER_URL = 'redis://'+ 'localhost:6379' + '/0'
 SENTRY_CACHE = 'sentry.cache.redis.RedisCache'
 
 # This file is just Python, with a touch of Django which means
-# you can inherit and tweak settings to your hearts content.
-
-# You should not change this setting after your database has been created
 # unless you have altered all schemas first
 SENTRY_USE_BIG_INTS = True
-
-# If you're expecting any kind of real traffic on Sentry, we highly recommend
-# configuring the CACHES and Redis settings
-
-###########
-# General #
-###########
-
-# The administrative email for this installation.
-# Note: This will be reported back to getsentry.com as the point of contact. See
-# the beacon documentation for more information. This **must** be a string.
-
-# SENTRY_ADMIN_EMAIL = 'your.name@example.com'
 SENTRY_ADMIN_EMAIL = os.getenv('SENTRY_ADMIN_EMAIL')
 
 # Instruct Sentry that this install intends to be run by a single organization
@@ -168,7 +123,7 @@ SENTRY_FILESTORE_OPTIONS = {
 ##############
 
 # You MUST configure the absolute URI root for Sentry:
-SENTRY_URL_PREFIX = os.getenv('SENTRY_REDIS_HOST')  # No trailing slash!
+SENTRY_URL_PREFIX = os.getenv('SENTRY_URL_PREFIX')  # No trailing slash!
 
 # If you're using a reverse proxy, you should enable the X-Forwarded-Proto
 # header and uncomment the following settings
@@ -195,7 +150,7 @@ EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+EMAIL_USE_TLS = bool(os.getenv('EMAIL_USE_TLS'))
 
 # The email address to send on behalf of
 SERVER_EMAIL = os.getenv('SERVER_EMAIL')
