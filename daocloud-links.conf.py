@@ -79,6 +79,11 @@ else:
     }
 
 
+redis_db = (
+        os.getenv('REDIS_DB')
+        or '0'
+    )
+
 
 SENTRY_BUFFER = 'sentry.buffer.redis.RedisBuffer'
 SENTRY_REDIS_OPTIONS = {
@@ -86,7 +91,7 @@ SENTRY_REDIS_OPTIONS = {
         0: {
             'host': 'localhost',
             'port': '6379',
-            'db': '0'
+            'db': redis_db
         },
     },
 }
