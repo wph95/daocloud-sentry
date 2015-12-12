@@ -44,8 +44,7 @@ RUN buildDeps='gcc libc6-dev make' \
 	&& rm redis.tar.gz \
 	&& make -C /usr/src/redis \
 	&& make -C /usr/src/redis install \
-	&& rm -r /usr/src/redis \
-	&& apt-get purge -y --auto-remove $buildDeps
+	&& rm -r /usr/src/redis 
 
 RUN mkdir -p /data
 VOLUME /data
