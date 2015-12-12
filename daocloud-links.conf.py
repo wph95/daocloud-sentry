@@ -142,12 +142,6 @@ SENTRY_ADMIN_EMAIL = ''
 # Instruct Sentry that this install intends to be run by a single organization
 # and thus various UI optimizations should be enabled.
 SENTRY_SINGLE_ORGANIZATION = True
-
-#########
-# Redis #
-#########
-
-# Generic Redis configuration used as defaults for various things including:
 # Buffers, Quotas, TSDB
 
 
